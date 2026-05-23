@@ -64,6 +64,7 @@ button {
 .site-shell {
   isolation: isolate;
   min-height: 100vh;
+  overflow-anchor: none;
   overflow: hidden;
   position: relative;
 }
@@ -220,12 +221,12 @@ button {
 .hero {
   align-items: center;
   display: grid;
-  gap: clamp(2.5rem, 6vw, 6.5rem);
-  grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+  gap: clamp(1.8rem, 4.8vw, 5rem);
+  grid-template-columns: minmax(0, 1.18fr) minmax(18rem, 0.82fr);
   margin: 0 auto;
-  max-width: 1200px;
-  min-height: 100vh;
-  padding: 9rem 1.4rem 5rem;
+  max-width: 1280px;
+  min-height: 100svh;
+  padding: clamp(6.2rem, 10svh, 8rem) 1.4rem clamp(1.5rem, 4svh, 3rem);
 }
 
 .hero-copy {
@@ -258,10 +259,10 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(3.6rem, 9vw, 7.8rem);
+  font-size: clamp(3.35rem, 8.6vw, 7.25rem);
   line-height: 0.88;
-  margin-bottom: 1.45rem;
-  max-width: 12ch;
+  margin-bottom: clamp(1rem, 2.2svh, 1.45rem);
+  max-width: 14ch;
 }
 
 h2 {
@@ -282,20 +283,26 @@ p {
 }
 
 .masked-text {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0 0.18em;
+  display: inline;
+  overflow-anchor: none;
 }
 
 .mask-word {
-  display: inline-flex;
+  display: inline-block;
   line-height: 0.96;
+  margin-right: 0.18em;
+  overflow-anchor: none;
   overflow: hidden;
   padding-bottom: 0.055em;
 }
 
+.mask-word:last-child {
+  margin-right: 0;
+}
+
 .mask-word span {
   display: inline-block;
+  overflow-anchor: none;
   will-change: transform;
 }
 
@@ -308,7 +315,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 0.85rem;
-  margin-top: 2rem;
+  margin-top: clamp(1.2rem, 2.7svh, 2rem);
 }
 
 .button {
@@ -341,7 +348,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
-  margin-top: 1.45rem;
+  margin-top: clamp(0.9rem, 2svh, 1.45rem);
 }
 
 .hero-proof span {
@@ -356,7 +363,7 @@ p {
 
 .hero-visual {
   aspect-ratio: 0.86;
-  min-height: 38rem;
+  height: clamp(28rem, 64svh, 36rem);
   position: relative;
   will-change: transform;
 }
@@ -584,8 +591,8 @@ p {
   max-width: 62rem;
 }
 
-.section-heading > p:not(.eyebrow),
-.panel-copy > p {
+.section-heading>p:not(.eyebrow),
+.panel-copy>p {
   max-width: 45rem;
 }
 
@@ -845,7 +852,7 @@ p {
   border-color: rgba(255, 249, 236, 0.28);
 }
 
-.use-card > span {
+.use-card>span {
   border-radius: 999px;
   display: block;
   height: 4.25rem;
@@ -853,22 +860,22 @@ p {
   width: 4.25rem;
 }
 
-.accent-strawberry > span {
+.accent-strawberry>span {
   background: var(--strawberry);
   box-shadow: 1rem 0.8rem 0 var(--vanilla);
 }
 
-.accent-pistachio > span {
+.accent-pistachio>span {
   background: var(--pistachio);
   box-shadow: 1rem 0.8rem 0 var(--mint);
 }
 
-.accent-blueberry > span {
+.accent-blueberry>span {
   background: var(--blueberry);
   box-shadow: 1rem 0.8rem 0 var(--strawberry);
 }
 
-.accent-vanilla > span {
+.accent-vanilla>span {
   background: var(--vanilla);
   box-shadow: 1rem 0.8rem 0 var(--sherbet);
 }
@@ -962,11 +969,12 @@ p {
   }
 
   .hero {
-    padding-top: 8rem;
+    min-height: auto;
+    padding-top: 7.5rem;
   }
 
   .hero-visual {
-    min-height: 34rem;
+    height: clamp(28rem, 58svh, 34rem);
   }
 
   .metric-grid,
@@ -978,6 +986,86 @@ p {
   .product-card:nth-child(2),
   .product-card:nth-child(n + 3) {
     grid-column: span 3;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 981px) {
+  .nav {
+    top: 0.72rem;
+    padding: 0.58rem 0.68rem;
+  }
+
+  .brand-mark {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .nav-cta {
+    padding: 0.62rem 0.92rem;
+  }
+
+  .hero {
+    gap: clamp(1.6rem, 3.6vw, 3.6rem);
+    padding-bottom: 1.2rem;
+    padding-top: 5.45rem;
+  }
+
+  h1 {
+    font-size: clamp(3.1rem, 8vw, 6.45rem);
+    margin-bottom: 0.95rem;
+  }
+
+  .hero-lede {
+    font-size: clamp(0.98rem, 1.35vw, 1.12rem);
+    line-height: 1.52;
+  }
+
+  .button {
+    min-height: 2.9rem;
+    padding: 0.78rem 1.06rem;
+  }
+
+  .hero-visual {
+    height: clamp(25rem, 62svh, 31rem);
+  }
+
+  .cone {
+    bottom: 1.2rem;
+    transform: translateX(-50%) scale(0.86);
+    transform-origin: 50% 100%;
+  }
+
+  .live-card {
+    padding: 1rem;
+    right: -0.5rem;
+    top: 1.6rem;
+    width: min(16.2rem, 48vw);
+  }
+
+  .live-card strong {
+    font-size: 2.85rem;
+    margin-top: 0.8rem;
+  }
+
+  .chart {
+    height: 4.1rem;
+    margin-top: 0.82rem;
+  }
+
+  .session-card {
+    bottom: 1.4rem;
+    left: -0.5rem;
+    padding: 0.85rem;
+    width: min(15.6rem, 47vw);
+  }
+
+  .session-card strong {
+    font-size: 2rem;
+  }
+
+  .orbit-chip {
+    font-size: 0.68rem;
+    padding: 0.62rem 0.78rem;
   }
 }
 
@@ -996,6 +1084,7 @@ p {
 
   .hero {
     padding-inline: 1rem;
+    padding-top: 7rem;
   }
 
   .hero-actions,
@@ -1004,7 +1093,7 @@ p {
   }
 
   .hero-visual {
-    min-height: 31rem;
+    height: clamp(25rem, 56svh, 31rem);
   }
 
   .live-card {
@@ -1066,6 +1155,7 @@ p {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

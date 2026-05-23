@@ -158,7 +158,57 @@ const flavorTags = [
   'Geo testing'
 ]
 
+const scrollProgressKey = 'kream-proxies-scroll-progress'
+
 const splitWords = (text: string) => text.split(' ').filter(Boolean)
+
+const getMaxScroll = () => {
+  const doc = document.documentElement
+  const body = document.body
+
+  return Math.max(doc.scrollHeight, body?.scrollHeight ?? 0) - window.innerHeight
+}
+
+const clampProgress = (value: number) => Math.min(1, Math.max(0, value))
+
+const readSavedScrollProgress = () => {
+  try {
+    const raw = sessionStorage.getItem(scrollProgressKey)
+
+    if (!raw) {
+      return 0
+    }
+
+    const parsed = Number(raw)
+
+    return Number.isFinite(parsed) ? clampProgress(parsed) : 0
+  } catch {
+    return 0
+  }
+}
+
+const persistScrollProgress = () => {
+  try {
+    const maxScroll = getMaxScroll()
+    const progress = maxScroll > 0 ? clampProgress(window.scrollY / maxScroll) : 0
+
+    sessionStorage.setItem(scrollProgressKey, String(progress))
+  } catch {
+    // Ignore storage failures in private or restricted browsing modes.
+  }
+}
+
+const restoreSavedScrollProgress = () => {
+  const progress = readSavedScrollProgress()
+  const maxScroll = getMaxScroll()
+  const targetScroll = maxScroll > 0 ? Math.round(progress * maxScroll) : 0
+  const html = document.documentElement
+  const previousScrollBehavior = html.style.scrollBehavior
+
+  html.style.scrollBehavior = 'auto'
+  window.scrollTo({ left: 0, top: targetScroll, behavior: 'auto' })
+  html.style.scrollBehavior = previousScrollBehavior
+}
 
 const MaskedText = ({ text, className = '' }: { text: string; className?: string }) => (
   <span className={`masked-text ${className}`} aria-label={text}>
@@ -176,15 +226,38 @@ const App = () => {
   useGSAP(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const root = rootRef.current
+    let isMounted = true
+    let saveScrollFrame = 0
 
     if (!root) {
       return
     }
 
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual'
+    }
+
+    const schedulePersistScrollProgress = () => {
+      if (saveScrollFrame !== 0) {
+        return
+      }
+
+      saveScrollFrame = window.requestAnimationFrame(() => {
+        saveScrollFrame = 0
+        persistScrollProgress()
+      })
+    }
+
+    window.addEventListener('scroll', schedulePersistScrollProgress, { passive: true })
+    window.addEventListener('pagehide', persistScrollProgress)
+    window.addEventListener('beforeunload', persistScrollProgress)
+
     gsap.defaults({
       duration: 0.82,
       ease: 'power3.out'
     })
+
+    restoreSavedScrollProgress()
 
     if (prefersReducedMotion) {
       gsap.set(root.querySelectorAll('.mask-word span, .reveal-copy, .scroll-reveal, .product-card, .use-card, .metric-tile, .faq-card'), {
@@ -194,7 +267,23 @@ const App = () => {
         scale: 1,
         clearProps: 'transform,visibility,opacity'
       })
-      return
+
+      document.fonts?.ready.then(() => {
+        if (!isMounted) {
+          return
+        }
+
+        ScrollTrigger.refresh()
+        restoreSavedScrollProgress()
+      })
+
+      return () => {
+        isMounted = false
+        window.removeEventListener('scroll', schedulePersistScrollProgress)
+        window.removeEventListener('pagehide', persistScrollProgress)
+        window.removeEventListener('beforeunload', persistScrollProgress)
+        window.cancelAnimationFrame(saveScrollFrame)
+      }
     }
 
     gsap.set('.product-card, .use-card, .metric-tile, .faq-card, .workflow-step', {
@@ -375,14 +464,38 @@ const App = () => {
       }
     })
 
-    document.fonts?.ready.then(() => ScrollTrigger.refresh())
+    const stabilizeInitialScroll = () => {
+      if (!isMounted) {
+        return
+      }
+
+      ScrollTrigger.refresh()
+      restoreSavedScrollProgress()
+    }
+
+    document.fonts?.ready.then(stabilizeInitialScroll)
+    window.addEventListener('load', stabilizeInitialScroll, { once: true })
+
+    requestAnimationFrame(() => {
+      restoreSavedScrollProgress()
+      requestAnimationFrame(restoreSavedScrollProgress)
+    })
+
+    return () => {
+      isMounted = false
+      window.removeEventListener('scroll', schedulePersistScrollProgress)
+      window.removeEventListener('pagehide', persistScrollProgress)
+      window.removeEventListener('beforeunload', persistScrollProgress)
+      window.cancelAnimationFrame(saveScrollFrame)
+      window.removeEventListener('load', stabilizeInitialScroll)
+    }
   }, { scope: rootRef })
 
   return (
     <main className="site-shell" ref={rootRef}>
       <div className="scroll-meter" />
-      <div className="ambient-orb one" />
-      <div className="ambient-orb two" />
+      {/* <div className="ambient-orb one" />
+      <div className="ambient-orb two" /> */}
 
       <nav className="nav" aria-label="Main navigation">
         <a className="brand" href="#top" aria-label="Kream Proxies home">
