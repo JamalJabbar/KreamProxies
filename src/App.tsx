@@ -327,14 +327,6 @@ const App = () => {
         duration: 0.82,
         stagger: 0.08
       }, '-=0.64')
-      .from('.scoop', {
-        scale: 0,
-        y: 28,
-        rotation: -8,
-        transformOrigin: '50% 100%',
-        ease: 'back.out(1.65)',
-        stagger: 0.08
-      }, '-=0.68')
 
     gsap.to('.scroll-meter', {
       scaleX: 1,
@@ -494,9 +486,6 @@ const App = () => {
   return (
     <main className="site-shell" ref={rootRef}>
       <div className="scroll-meter" />
-      {/* <div className="ambient-orb one" />
-      <div className="ambient-orb two" /> */}
-
       <nav className="nav" aria-label="Main navigation">
         <a className="brand" href="#top" aria-label="Kream Proxies home">
           <span className="brand-mark">KP</span>
@@ -510,12 +499,13 @@ const App = () => {
         </div>
         <a className="nav-cta" href="#start">Start scooping</a>
       </nav>
-
+      <div className="ambient-orb one" />
+      <div className="ambient-orb two" />
       <section className="hero" id="top">
         <div className="hero-copy">
           <p className="eyebrow reveal-copy">Residential · Mobile · ISP · Datacenter</p>
           <h1>
-            <MaskedText text="Proxy infrastructure with ice-cold routing and checkout-speed delivery." />
+            <MaskedText text="Proxy infrastructure with ice-cold routing." />
           </h1>
           <p className="hero-lede reveal-copy">
             Kream Proxies gives operators one clean control plane for rotating residential IPs,
@@ -525,21 +515,14 @@ const App = () => {
             <a className="button primary" href="#pricing">View flavors</a>
             <a className="button ghost" href="#products">Compare products</a>
           </div>
-          <div className="hero-proof reveal-copy" aria-label="Key platform facts">
+          {/* <div className="hero-proof reveal-copy" aria-label="Key platform facts">
             <span>No subscriptions</span>
             <span>Setup in 60 seconds</span>
             <span>Discord support</span>
-          </div>
+          </div> */}
         </div>
 
         <div className="hero-visual" aria-label="Kream Proxies network dashboard illustration">
-          <div className="cone">
-            <span className="scoop scoop-mint" />
-            <span className="scoop scoop-berry" />
-            <span className="scoop scoop-vanilla" />
-            <span className="cone-grid" />
-          </div>
-
           <div className="dashboard-card live-card">
             <div className="card-topline">
               <span>Live mix</span>
@@ -562,9 +545,9 @@ const App = () => {
             <p>Hold the same route while accounts warm, carts queue, or QA sessions stay alive.</p>
           </div>
 
-          <div className="orbit-chip chip-a">US · UK · JP</div>
+          {/* <div className="orbit-chip chip-a">US · UK · JP</div>
           <div className="orbit-chip chip-b">Stripe + SOL</div>
-          <div className="orbit-chip chip-c">250K batch</div>
+          <div className="orbit-chip chip-c">250K batch</div> */}
         </div>
       </section>
 
@@ -734,7 +717,7 @@ const App = () => {
       <footer className="footer">
         <span>Kream Proxies</span>
         <span>Residential · Mobile · ISP · Datacenter</span>
-        <span>Built for compliant operator workflows.</span>
+        <span>Built by Jabbar Studios.</span>
       </footer>
     </main>
   )
