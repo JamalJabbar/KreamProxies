@@ -222,6 +222,8 @@ const MaskedText = ({ text, className = '' }: { text: string; className?: string
 
 const App = () => {
   const rootRef = useRef<HTMLElement | null>(null)
+  const navRef = useRef<HTMLElement | null>(null)
+  const homeIconRef = useRef<HTMLAnchorElement | null>(null)
 
   useGSAP(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -258,6 +260,18 @@ const App = () => {
     })
 
     restoreSavedScrollProgress()
+
+    gsap.set(navRef.current, {
+      transformOrigin: 'top center'
+    })
+
+    gsap.set(homeIconRef.current, {
+      autoAlpha: prefersReducedMotion ? 1 : 0,
+      scale: prefersReducedMotion ? 1 : 0.84,
+      x: prefersReducedMotion ? 0 : -12,
+      y: prefersReducedMotion ? 0 : -12,
+      transformOrigin: 'center center'
+    })
 
     if (prefersReducedMotion) {
       gsap.set(root.querySelectorAll('.mask-word span, .reveal-copy, .scroll-reveal, .product-card, .use-card, .metric-tile, .faq-card'), {
@@ -327,6 +341,30 @@ const App = () => {
         duration: 0.82,
         stagger: 0.08
       }, '-=0.64')
+
+    gsap.timeline({
+      defaults: {
+        ease: 'none'
+      },
+      scrollTrigger: {
+        trigger: root,
+        start: 'top top',
+        end: '+=180',
+        scrub: 0.45,
+        invalidateOnRefresh: true
+      }
+    })
+      .to(navRef.current, {
+        autoAlpha: 0,
+        scale: 0.97,
+        y: -16
+      }, 0)
+      .to(homeIconRef.current, {
+        autoAlpha: 1,
+        scale: 1,
+        x: 0,
+        y: 0
+      }, 0)
 
     gsap.to('.scroll-meter', {
       scaleX: 1,
@@ -486,7 +524,10 @@ const App = () => {
   return (
     <main className="site-shell" ref={rootRef}>
       <div className="scroll-meter" />
-      <nav className="nav" aria-label="Main navigation">
+      <a className="nav-home" href="#top" aria-label="Back to top" ref={homeIconRef}>
+        <span className="nav-home-mark">KP</span>
+      </a>
+      <nav className="nav" aria-label="Main navigation" ref={navRef}>
         <a className="brand" href="#top" aria-label="Kream Proxies home">
           <span className="brand-mark">KP</span>
           <span>Kream Proxies</span>
