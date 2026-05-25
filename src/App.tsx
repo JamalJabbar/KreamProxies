@@ -618,8 +618,8 @@ const App = () => {
         </div>
       </section>
 
-      <section className="products section-pad" id="products">
-        <div className="section-heading scroll-reveal">
+      <section className="products section-pad">
+        <div className="section-heading scroll-reveal" id="products">
           <p className="eyebrow">Products</p>
           <h2 className="masked-scroll">
             <MaskedText text="Five proxy flavors, one operational freezer." />
@@ -651,8 +651,8 @@ const App = () => {
         </div>
       </section>
 
-      <section className="control-plane section-pad" id="pricing">
-        <div className="panel-copy scroll-reveal">
+      <section className="control-plane section-pad">
+        <div className="panel-copy scroll-reveal" id="pricing">
           <p className="eyebrow">Control plane</p>
           <h2 className="masked-scroll">
             <MaskedText text="Generate, paste, ship, then know exactly where every GB went." />
@@ -688,8 +688,8 @@ const App = () => {
         </div>
       </section>
 
-      <section className="use-cases section-pad" id="use-cases">
-        <div className="section-heading scroll-reveal">
+      <section className="use-cases section-pad">
+        <div className="section-heading scroll-reveal" id="use-cases">
           <p className="eyebrow">Use cases</p>
           <h2 className="masked-scroll">
             <MaskedText text="Built for real operator workflows, not showroom demos." />
@@ -723,8 +723,8 @@ const App = () => {
         </div>
       </section>
 
-      <section className="faq section-pad" id="faq">
-        <div className="section-heading scroll-reveal">
+      <section className="faq section-pad">
+        <div className="section-heading scroll-reveal" id="faq">
           <p className="eyebrow">FAQ</p>
           <h2 className="masked-scroll">
             <MaskedText text="Common questions before the first scoop." />
