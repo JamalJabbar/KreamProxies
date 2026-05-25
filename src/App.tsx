@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -224,6 +224,73 @@ const App = () => {
   const rootRef = useRef<HTMLElement | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
   const homeIconRef = useRef<HTMLAnchorElement | null>(null)
+  const menuToggleRef = useRef<HTMLButtonElement | null>(null)
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null)
+  const mobileMenuTimelineRef = useRef<gsap.core.Timeline | null>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    const menuItems = Array.from(
+      mobileMenuRef.current?.querySelectorAll<HTMLAnchorElement>('.mobile-menu-item') ?? []
+    )
+    const focusableControls = menuToggleRef.current
+      ? [...menuItems, menuToggleRef.current]
+      : menuItems
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        mobileMenuTimelineRef.current?.reverse()
+        setIsMobileMenuOpen(false)
+        window.requestAnimationFrame(() => menuToggleRef.current?.focus())
+        return
+      }
+
+      if (event.key !== 'Tab' || !focusableControls.length) {
+        return
+      }
+
+      const firstItem = focusableControls[0]
+      const lastItem = focusableControls[focusableControls.length - 1]
+
+      if (event.shiftKey && document.activeElement === firstItem) {
+        event.preventDefault()
+        lastItem.focus()
+      } else if (!event.shiftKey && document.activeElement === lastItem) {
+        event.preventDefault()
+        firstItem.focus()
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleKeyDown)
+    const focusFrame = window.requestAnimationFrame(() => menuItems[0]?.focus())
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+      window.cancelAnimationFrame(focusFrame)
+    }
+  }, [isMobileMenuOpen])
+
+  useEffect(() => {
+    const mobileHeader = window.matchMedia('(max-width: 980px)')
+    const closeWhenDesktop = (event: MediaQueryListEvent) => {
+      if (!event.matches) {
+        mobileMenuTimelineRef.current?.reverse()
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    mobileHeader.addEventListener('change', closeWhenDesktop)
+
+    return () => mobileHeader.removeEventListener('change', closeWhenDesktop)
+  }, [])
 
   useGSAP(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -261,17 +328,70 @@ const App = () => {
 
     restoreSavedScrollProgress()
 
-    gsap.set(navRef.current, {
-      transformOrigin: 'top center'
-    })
+    const headerMedia = gsap.matchMedia()
 
-    gsap.set(homeIconRef.current, {
-      autoAlpha: prefersReducedMotion ? 1 : 0,
-      scale: prefersReducedMotion ? 1 : 0.84,
-      x: prefersReducedMotion ? 0 : -12,
-      y: prefersReducedMotion ? 0 : -12,
-      transformOrigin: 'center center'
-    })
+    headerMedia.add(
+      {
+        mobile: '(max-width: 980px)',
+        desktop: '(min-width: 981px)'
+      },
+      (context) => {
+        if (context.conditions?.mobile) {
+          gsap.set(homeIconRef.current, {
+            autoAlpha: 1,
+            scale: 1,
+            x: 0,
+            y: 0,
+            transformOrigin: 'center center'
+          })
+
+          return
+        }
+
+        gsap.set(navRef.current, {
+          autoAlpha: 1,
+          scale: 1,
+          y: 0,
+          transformOrigin: 'top center'
+        })
+
+        gsap.set(homeIconRef.current, {
+          autoAlpha: 0,
+          scale: 0.84,
+          x: -12,
+          y: -12,
+          transformOrigin: 'center center'
+        })
+
+        if (prefersReducedMotion) {
+          return
+        }
+
+        gsap.timeline({
+          defaults: {
+            ease: 'none'
+          },
+          scrollTrigger: {
+            trigger: root,
+            start: 'top top',
+            end: '+=180',
+            scrub: 0.45,
+            invalidateOnRefresh: true
+          }
+        })
+          .to(navRef.current, {
+            autoAlpha: 0,
+            scale: 0.97,
+            y: -16
+          }, 0)
+          .to(homeIconRef.current, {
+            autoAlpha: 1,
+            scale: 1,
+            x: 0,
+            y: 0
+          }, 0)
+      }
+    )
 
     if (prefersReducedMotion) {
       gsap.set(root.querySelectorAll('.mask-word span, .reveal-copy, .scroll-reveal, .product-card, .use-card, .metric-tile, .faq-card'), {
@@ -297,6 +417,7 @@ const App = () => {
         window.removeEventListener('pagehide', persistScrollProgress)
         window.removeEventListener('beforeunload', persistScrollProgress)
         window.cancelAnimationFrame(saveScrollFrame)
+        headerMedia.revert()
       }
     }
 
@@ -341,30 +462,6 @@ const App = () => {
         duration: 0.82,
         stagger: 0.08
       }, '-=0.64')
-
-    gsap.timeline({
-      defaults: {
-        ease: 'none'
-      },
-      scrollTrigger: {
-        trigger: root,
-        start: 'top top',
-        end: '+=180',
-        scrub: 0.45,
-        invalidateOnRefresh: true
-      }
-    })
-      .to(navRef.current, {
-        autoAlpha: 0,
-        scale: 0.97,
-        y: -16
-      }, 0)
-      .to(homeIconRef.current, {
-        autoAlpha: 1,
-        scale: 1,
-        x: 0,
-        y: 0
-      }, 0)
 
     gsap.to('.scroll-meter', {
       scaleX: 1,
@@ -518,15 +615,223 @@ const App = () => {
       window.removeEventListener('beforeunload', persistScrollProgress)
       window.cancelAnimationFrame(saveScrollFrame)
       window.removeEventListener('load', stabilizeInitialScroll)
+      headerMedia.revert()
     }
   }, { scope: rootRef })
+
+  useGSAP(() => {
+    const menu = mobileMenuRef.current
+    const panel = menu?.querySelector<HTMLElement>('.mobile-menu-panel')
+    const backdrop = menu?.querySelector<HTMLElement>('.mobile-menu-backdrop')
+    const items = menu?.querySelectorAll<HTMLElement>('.mobile-menu-item')
+    const details = menu?.querySelectorAll<HTMLElement>('.mobile-menu-detail')
+    const lines = menuToggleRef.current?.querySelectorAll<HTMLElement>('.menu-toggle-line')
+
+    if (!menu || !panel || !backdrop || !items || !details || !lines) {
+      return
+    }
+
+    const menuMedia = gsap.matchMedia()
+
+    menuMedia.add(
+      {
+        mobile: '(max-width: 980px)',
+        reduceMotion: '(prefers-reduced-motion: reduce)'
+      },
+      (context) => {
+        if (!context.conditions?.mobile) {
+          return
+        }
+
+        const reduceMotion = Boolean(context.conditions.reduceMotion)
+        const panelDuration = reduceMotion ? 0 : 0.62
+        const detailDuration = reduceMotion ? 0 : 0.3
+
+        gsap.set(menu, {
+          autoAlpha: 0,
+          pointerEvents: 'none'
+        })
+        gsap.set(backdrop, {
+          autoAlpha: 0
+        })
+        gsap.set(panel, {
+          scale: 0.94,
+          transformOrigin: '100% 0%',
+          xPercent: 106
+        })
+        gsap.set(items, {
+          autoAlpha: 0,
+          rotationY: -10,
+          transformOrigin: '0% 50%',
+          x: 26
+        })
+        gsap.set(details, {
+          autoAlpha: 0,
+          y: 12
+        })
+        gsap.set(lines, {
+          autoAlpha: 1,
+          rotation: 0,
+          scaleX: 1,
+          y: 0
+        })
+
+        const timeline = gsap.timeline({
+          paused: true,
+          defaults: {
+            ease: 'power3.out'
+          },
+          onReverseComplete: () => {
+            gsap.set(menu, {
+              autoAlpha: 0,
+              pointerEvents: 'none'
+            })
+          }
+        })
+
+        timeline
+          .set(menu, {
+            autoAlpha: 1,
+            immediateRender: false,
+            pointerEvents: 'auto'
+          })
+          .to(backdrop, {
+            autoAlpha: 1,
+            duration: reduceMotion ? 0 : 0.28
+          }, 0)
+          .to(panel, {
+            duration: panelDuration,
+            ease: 'power4.inOut',
+            scale: 1,
+            xPercent: 0
+          }, 0)
+          .to(items, {
+            autoAlpha: 1,
+            duration: detailDuration,
+            rotationY: 0,
+            stagger: reduceMotion ? 0 : 0.045,
+            x: 0
+          }, reduceMotion ? 0 : 0.2)
+          .to(details, {
+            autoAlpha: 1,
+            duration: detailDuration,
+            stagger: reduceMotion ? 0 : 0.05,
+            y: 0
+          }, reduceMotion ? 0 : 0.32)
+          .to(lines[0], {
+            duration: detailDuration,
+            rotation: 45,
+            y: 6
+          }, 0)
+          .to(lines[1], {
+            autoAlpha: 0,
+            duration: detailDuration,
+            scaleX: 0
+          }, 0)
+          .to(lines[2], {
+            duration: detailDuration,
+            rotation: -45,
+            y: -6
+          }, 0)
+
+        mobileMenuTimelineRef.current = timeline
+
+        if (menu.getAttribute('aria-hidden') === 'false') {
+          timeline.progress(1)
+        }
+
+        return () => {
+          timeline.kill()
+          mobileMenuTimelineRef.current = null
+        }
+      }
+    )
+
+    return () => menuMedia.revert()
+  }, { scope: rootRef })
+
+  const closeMobileMenu = (restoreFocus = false) => {
+    mobileMenuTimelineRef.current?.reverse()
+    setIsMobileMenuOpen(false)
+
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => menuToggleRef.current?.focus())
+    }
+  }
+
+  const toggleMobileMenu = () => {
+    if (isMobileMenuOpen) {
+      mobileMenuTimelineRef.current?.reverse()
+    } else {
+      mobileMenuTimelineRef.current?.play()
+    }
+
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
 
   return (
     <main className="site-shell" ref={rootRef}>
       <div className="scroll-meter" />
-      <a className="nav-home" href="#top" aria-label="Back to top" ref={homeIconRef}>
+      <a className="nav-home" href="#top" aria-label="Back to top" onClick={() => closeMobileMenu()} ref={homeIconRef}>
         <span className="nav-home-mark">KP</span>
       </a>
+      <button
+        aria-controls="mobile-navigation"
+        aria-expanded={isMobileMenuOpen}
+        aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        className="mobile-menu-toggle"
+        onClick={toggleMobileMenu}
+        ref={menuToggleRef}
+        type="button"
+      >
+        <span aria-hidden="true" className="menu-toggle-line" />
+        <span aria-hidden="true" className="menu-toggle-line" />
+        <span aria-hidden="true" className="menu-toggle-line" />
+      </button>
+      <div
+        aria-hidden={!isMobileMenuOpen}
+        aria-label="Mobile navigation"
+        aria-modal="true"
+        className="mobile-menu"
+        id="mobile-navigation"
+        inert={!isMobileMenuOpen}
+        ref={mobileMenuRef}
+        role="dialog"
+      >
+        <button
+          aria-label="Close navigation menu"
+          className="mobile-menu-backdrop"
+          onClick={() => closeMobileMenu(true)}
+          tabIndex={-1}
+          type="button"
+        />
+        <div className="mobile-menu-panel">
+          <p className="mobile-menu-kicker mobile-menu-detail">Kream Proxies / Navigation</p>
+          <nav className="mobile-menu-links" aria-label="Mobile navigation links">
+            <a className="mobile-menu-item" href="#products" onClick={() => closeMobileMenu(true)}>
+              <span>Products</span>
+              <small aria-hidden="true">01</small>
+            </a>
+            <a className="mobile-menu-item" href="#use-cases" onClick={() => closeMobileMenu(true)}>
+              <span>Use cases</span>
+              <small aria-hidden="true">02</small>
+            </a>
+            <a className="mobile-menu-item" href="#pricing" onClick={() => closeMobileMenu(true)}>
+              <span>Pricing</span>
+              <small aria-hidden="true">03</small>
+            </a>
+            <a className="mobile-menu-item" href="#faq" onClick={() => closeMobileMenu(true)}>
+              <span>FAQ</span>
+              <small aria-hidden="true">04</small>
+            </a>
+            <a className="mobile-menu-item mobile-menu-login" href="#start" onClick={() => closeMobileMenu(true)}>Login</a>
+          </nav>
+          <div className="mobile-menu-footer mobile-menu-detail">
+            <p>Ice-cold routing for serious operators.</p>
+            <span>Residential / Mobile / ISP / DC</span>
+          </div>
+        </div>
+      </div>
       <nav className="nav" aria-label="Main navigation" ref={navRef}>
         <a className="brand" href="#top" aria-label="Kream Proxies home">
           <span className="brand-mark">KP</span>
