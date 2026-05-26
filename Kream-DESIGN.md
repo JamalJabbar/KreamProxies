@@ -13,7 +13,7 @@ colors:
   border: "#27272A"
 typography:
   display-lg:
-    fontFamily: "Inter"
+    fontFamily: "Newsreader"
     fontSize: "64px"
     fontWeight: 500
     lineHeight: "1.04"
@@ -58,7 +58,7 @@ Key visible headings include: Beyond traditional equity. The multi-asset strateg
 ## Colors
 Anchor the palette in primary #F2EAD3, secondary #000000, accent #F2EAD3, background #000000, surface #F2EAD3, text-primary #FFFFFF. Keep background, surface, text, and border roles distinct so generated layouts retain the same contrast pattern as the source.
 ## Typography
-Use Inter for display moments and Playfair Display for body copy unless the HTML clearly demands a compatible fallback. Labels and technical metadata should use JetBrains Mono or an equivalent mono face.
+Use Newsreader for display moments and Playfair Display for body copy unless the HTML clearly demands a compatible fallback. Labels and technical metadata should use JetBrains Mono or an equivalent mono face.
 ## Layout
 Keep spacing deliberate and stable. Favor the same grid direction, max-width behavior, card density, and responsive stacking seen in the HTML. Do not replace distinctive source structures with generic SaaS sections.
 ## Components

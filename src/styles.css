@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Newsreader:opsz,wght@6..72,400..800&family=Outfit:wght@400;500;600;700&display=swap');
+
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 :root {
@@ -319,21 +321,21 @@ p {
 
 h1,
 h2 {
-  font-family: 'Fraunces', ui-serif, serif;
+  font-family: 'Newsreader', ui-serif, serif;
   font-weight: 800;
   letter-spacing: -0.065em;
   text-wrap: balance;
 }
 
 h1 {
-  font-size: clamp(3.35rem, 8.6vw, 7.25rem);
+  font-size: clamp(2.85rem, 7.3vw, 5.15rem);
   line-height: 0.88;
   margin-bottom: clamp(1rem, 2.2svh, 1.45rem);
   max-width: 14ch;
 }
 
 h2 {
-  font-size: clamp(2.35rem, 5.6vw, 5.2rem);
+  font-size: clamp(1.98rem, 4.6vw, 4.35rem);
   line-height: 0.92;
   margin-bottom: 1rem;
 }
@@ -646,7 +648,7 @@ p {
 .metric-tile strong {
   display: block;
   font-family: 'Fraunces', ui-serif, serif;
-  font-size: clamp(3rem, 6vw, 5rem);
+  font-size: clamp(2.5rem, 5vw, 4.15rem);
   letter-spacing: -0.08em;
   line-height: 0.9;
   margin: 1.9rem 0 0.8rem;
@@ -747,7 +749,7 @@ p {
 
 .product-card h3 {
   font-family: 'Fraunces', ui-serif, serif;
-  font-size: clamp(2rem, 4vw, 3.1rem);
+  font-size: clamp(1.72rem, 3.45vw, 2.6rem);
   line-height: 0.94;
   margin-top: auto;
 }
@@ -918,7 +920,7 @@ p {
   color: var(--strawberry);
   display: block;
   font-family: 'Fraunces', ui-serif, serif;
-  font-size: 3rem;
+  font-size: 2.5rem;
   line-height: 1;
   margin-bottom: 2rem;
 }
@@ -1090,7 +1092,7 @@ p {
   }
 
   h1 {
-    font-size: clamp(3.1rem, 8vw, 6.45rem);
+    font-size: clamp(3.1rem, 8vw, 5.45rem);
     margin-bottom: 0.95rem;
   }
 
@@ -1264,7 +1266,7 @@ p {
     color: var(--cream);
     display: flex;
     font-family: 'Fraunces', Georgia, serif;
-    font-size: clamp(2.2rem, 10vw, 3.15rem);
+    font-size: clamp(1.85rem, 8.4vw, 2.65rem);
     font-weight: 650;
     justify-content: space-between;
     letter-spacing: -0.055em;
@@ -1433,6 +1435,7 @@ p {
 }
 
 @container section (max-width: 42rem) {
+
   .metric-grid,
   .use-grid,
   .workflow-grid,
