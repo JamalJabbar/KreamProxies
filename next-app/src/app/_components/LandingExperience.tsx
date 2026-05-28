@@ -270,6 +270,12 @@ export function LandingExperience({ children }: LandingExperienceProps) {
       scale: 0.985
     })
 
+    const isMobileHeader = window.matchMedia('(max-width: 980px)').matches
+    const headerIntroTargets = [
+      ...(isMobileHeader ? [homeIconRef.current, menuToggleRef.current] : [navRef.current])
+    ].filter((element): element is HTMLElement => element !== null)
+    const heroRevealCopy = root.querySelectorAll<HTMLElement>('.hero .reveal-copy')
+    const heroVisualItems = root.querySelectorAll<HTMLElement>('.hero .dashboard-card, .hero .orbit-chip')
     const heroWords = root.querySelectorAll<HTMLElement>('.hero .mask-word span')
     const showHeroWords = () => {
       gsap.set(heroWords, {
@@ -285,7 +291,41 @@ export function LandingExperience({ children }: LandingExperienceProps) {
         force3D: true
       })
     }
+    const showHeroIntroElements = () => {
+      gsap.set(heroRevealCopy, {
+        autoAlpha: 1,
+        y: 0
+      })
+      gsap.set(heroVisualItems, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1
+      })
+    }
 
+    gsap.set(root, {
+      autoAlpha: 0
+    })
+    gsap.set(navRef.current, {
+      autoAlpha: 0,
+      y: -26
+    })
+    if (isMobileHeader) {
+      gsap.set(headerIntroTargets, {
+        autoAlpha: 0,
+        scale: 0.96,
+        y: -12
+      })
+    }
+    gsap.set(heroRevealCopy, {
+      autoAlpha: 0,
+      y: 28
+    })
+    gsap.set(heroVisualItems, {
+      autoAlpha: 0,
+      y: 36,
+      scale: 0.95
+    })
     gsap.set(heroWords, {
       autoAlpha: 0,
       x: 0,
@@ -309,13 +349,14 @@ export function LandingExperience({ children }: LandingExperienceProps) {
     })
 
     intro
-      .from('.site-shell', {
-        autoAlpha: 0,
+      .to(root, {
+        autoAlpha: 1,
         duration: 0.18
       })
-      .from('.nav', {
-        autoAlpha: 0,
-        y: -26,
+      .to(headerIntroTargets, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
         duration: 0.7
       })
       .set(heroWords, {
@@ -339,18 +380,19 @@ export function LandingExperience({ children }: LandingExperienceProps) {
         },
         '-=0.32'
       )
-      .from('.hero .reveal-copy', {
-        autoAlpha: 0,
-        y: 28,
+      .to(heroRevealCopy, {
+        autoAlpha: 1,
+        y: 0,
         duration: 0.78,
         stagger: 0.08
       }, '-=0.76')
-      .from('.dashboard-card, .orbit-chip', {
-        autoAlpha: 0,
-        y: 36,
-        scale: 0.95,
+      .to(heroVisualItems, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
         duration: 0.82,
-        stagger: 0.08
+        stagger: 0.08,
+        onComplete: showHeroIntroElements
       }, '-=0.64')
 
     gsap.to('.scroll-meter', {

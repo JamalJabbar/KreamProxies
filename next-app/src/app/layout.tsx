@@ -45,7 +45,7 @@ export default function RootLayout({
     >
       <body>
         <noscript>
-          <style>{'.hero-intro-pending .hero .mask-word span { opacity: 1 !important; transform: none !important; visibility: visible !important; }'}</style>
+          <style>{'.hero-intro-pending .site-shell, .hero-intro-pending .nav, .hero-intro-pending .nav-home, .hero-intro-pending .mobile-menu-toggle, .hero-intro-pending .hero .reveal-copy, .hero-intro-pending .hero .dashboard-card, .hero-intro-pending .hero .orbit-chip, .hero-intro-pending .hero .mask-word span { opacity: 1 !important; transform: none !important; visibility: visible !important; }'}</style>
         </noscript>
         {children}
       </body>

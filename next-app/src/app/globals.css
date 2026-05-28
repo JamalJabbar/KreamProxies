@@ -371,6 +371,35 @@ p {
   will-change: transform;
 }
 
+.hero-intro-pending .site-shell,
+.hero-intro-pending .nav,
+.hero-intro-pending .nav-home,
+.hero-intro-pending .mobile-menu-toggle,
+.hero-intro-pending .hero .reveal-copy,
+.hero-intro-pending .hero .dashboard-card,
+.hero-intro-pending .hero .orbit-chip {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.hero-intro-pending .nav {
+  transform: translate(-50%, -26px);
+}
+
+.hero-intro-pending .nav-home,
+.hero-intro-pending .mobile-menu-toggle {
+  transform: translate3d(0, -12px, 0) scale(0.96);
+}
+
+.hero-intro-pending .hero .reveal-copy {
+  transform: translate3d(0, 28px, 0);
+}
+
+.hero-intro-pending .hero .dashboard-card,
+.hero-intro-pending .hero .orbit-chip {
+  transform: translate3d(0, 36px, 0) scale(0.95);
+}
+
 .hero-intro-pending .hero .mask-word span {
   opacity: 0;
   transform: translate3d(0, 130%, 0) scale(0.98) skewY(4deg);
