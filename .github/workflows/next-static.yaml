@@ -48,7 +48,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: "./out"
+          path: ".next-app/out"
 
       - name: Deploy to GitHub Pages
         id: deployment
