@@ -41,9 +41,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${newsreader.variable} ${fraunces.variable} ${jetBrainsMono.variable}`}
+      className={`${outfit.variable} ${newsreader.variable} ${fraunces.variable} ${jetBrainsMono.variable} hero-intro-pending`}
     >
-      <body>{children}</body>
+      <body>
+        <noscript>
+          <style>{'.hero-intro-pending .hero .mask-word span { opacity: 1 !important; transform: none !important; visibility: visible !important; }'}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   )
 }

@@ -371,6 +371,12 @@ p {
   will-change: transform;
 }
 
+.hero-intro-pending .hero .mask-word span {
+  opacity: 0;
+  transform: translate3d(0, 130%, 0) scale(0.98) skewY(4deg);
+  visibility: hidden;
+}
+
 .hero-lede {
   font-size: clamp(1.04rem, 1.7vw, 1.24rem);
   max-width: 44rem;

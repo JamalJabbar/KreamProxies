@@ -236,6 +236,7 @@ export function LandingExperience({ children }: LandingExperienceProps) {
     )
 
     if (prefersReducedMotion) {
+      document.documentElement.classList.remove('hero-intro-pending')
       gsap.set(root.querySelectorAll('.mask-word span, .reveal-copy, .scroll-reveal, .product-card, .use-card, .metric-tile, .faq-card'), {
         autoAlpha: 1,
         y: 0,
@@ -269,7 +270,39 @@ export function LandingExperience({ children }: LandingExperienceProps) {
       scale: 0.985
     })
 
+    const heroWords = root.querySelectorAll<HTMLElement>('.hero .mask-word span')
+    const showHeroWords = () => {
+      gsap.set(heroWords, {
+        autoAlpha: 1,
+        x: 0,
+        y: 0,
+        xPercent: 0,
+        yPercent: 0,
+        scale: 1,
+        skewX: 0,
+        skewY: 0,
+        rotation: 0,
+        force3D: true
+      })
+    }
+
+    gsap.set(heroWords, {
+      autoAlpha: 0,
+      x: 0,
+      y: 0,
+      xPercent: 0,
+      yPercent: 130,
+      scale: 0.98,
+      skewX: 0,
+      skewY: 4,
+      rotation: 0,
+      transformOrigin: '50% 100%',
+      force3D: true
+    })
+    document.documentElement.classList.remove('hero-intro-pending')
+
     const intro = gsap.timeline({
+      paused: true,
       defaults: {
         ease: 'power4.out'
       }
@@ -285,12 +318,27 @@ export function LandingExperience({ children }: LandingExperienceProps) {
         y: -26,
         duration: 0.7
       })
-      .from('.hero .mask-word span', {
-        yPercent: 112,
-        skewY: 4,
-        duration: 1,
-        stagger: 0.028
+      .set(heroWords, {
+        autoAlpha: 1
       }, '-=0.32')
+      .to(
+        heroWords,
+        {
+          autoAlpha: 1,
+          x: 0,
+          y: 0,
+          xPercent: 0,
+          yPercent: 0,
+          scale: 1,
+          skewX: 0,
+          skewY: 0,
+          rotation: 0,
+          duration: 1,
+          stagger: 0.028,
+          onComplete: showHeroWords
+        },
+        '-=0.32'
+      )
       .from('.hero .reveal-copy', {
         autoAlpha: 0,
         y: 28,
@@ -442,8 +490,29 @@ export function LandingExperience({ children }: LandingExperienceProps) {
       restoreSavedScrollProgress()
     }
 
-    document.fonts?.ready.then(stabilizeInitialScroll)
-    window.addEventListener('load', stabilizeInitialScroll, { once: true })
+    let introHasPlayed = false
+    let introFallbackTimeout = 0
+    const playIntro = () => {
+      if (!isMounted || introHasPlayed) {
+        return
+      }
+
+      introHasPlayed = true
+      window.clearTimeout(introFallbackTimeout)
+      stabilizeInitialScroll()
+      intro.play(0)
+    }
+
+    const fontsReady = document.fonts?.ready ?? Promise.resolve()
+
+    fontsReady.then(stabilizeInitialScroll).catch(() => undefined)
+
+    if (document.readyState === 'complete') {
+      requestAnimationFrame(playIntro)
+    } else {
+      window.addEventListener('load', playIntro, { once: true })
+      introFallbackTimeout = window.setTimeout(playIntro, 1800)
+    }
 
     requestAnimationFrame(() => {
       restoreSavedScrollProgress()
@@ -456,7 +525,8 @@ export function LandingExperience({ children }: LandingExperienceProps) {
       window.removeEventListener('pagehide', persistScrollProgress)
       window.removeEventListener('beforeunload', persistScrollProgress)
       window.cancelAnimationFrame(saveScrollFrame)
-      window.removeEventListener('load', stabilizeInitialScroll)
+      window.clearTimeout(introFallbackTimeout)
+      window.removeEventListener('load', playIntro)
       headerMedia.revert()
     }
   }, { scope: rootRef })
