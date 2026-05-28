@@ -23,24 +23,36 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./next-app
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
       - name: Enable Corepack
         run: corepack enable
+        working-directory: .
 
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
           node-version: lts/*
           cache: "pnpm"
+          cache-dependency-path: next-app/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build static export
         run: pnpm build
+
+      - name: Check build output
+        run: |
+          pwd
+          ls -la
+          ls -la out || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
